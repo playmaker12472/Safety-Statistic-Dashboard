@@ -14,7 +14,7 @@ safety_stats = {
 
 def calculate_current_record():
     """Calculates current record as days since the last accident."""
-    today = datetime.datetime.now()
+    today = datetime.datetime.now() + datetime.timedelta(hours=7)
     last_accident_date = datetime.datetime.strptime(safety_stats["last_accident"], "%d.%m.%y")
     current_record = (today - last_accident_date).days
     return current_record
