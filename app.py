@@ -7,9 +7,9 @@ app.secret_key = "safety-dashboard"  # Required for session management
 
 # Safety Statistics (Stored in memory, can be upgraded to a database)
 safety_stats = {
-    "zero_lta_target": 13384650,
+    "zero_lta_target": 365,
     "past_best_record": 0,  # Initial past best record
-    "last_accident": "21.09.18",  # Last accident date in DD.MM.YY format
+    "last_accident": "25.01.2025",  # Last accident date in DD.MM.YY format
 }
 
 def calculate_current_record():
