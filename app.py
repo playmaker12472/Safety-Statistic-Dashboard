@@ -12,10 +12,14 @@ safety_stats = {
     "last_accident": "30.01.2025",  # Last accident date in DD.MM.YY format
 }
 
+def get_now():
+    """Returns the current datetime adjusted to UTC+7"""
+    return datetime.datetime.utcnow() + datetime.timedelta(hours=7)
+
 def calculate_current_record():
     """Calculates current record as days since the last accident."""
-    today = datetime.datetime.now() + datetime.timedelta(hours=7)
-    last_accident_date = datetime.datetime.strptime(safety_stats["last_accident"], "%d.%m.%y")
+    today = get_now()
+    last_accident_date = datetime.datetime.strptime(safety_stats["last_accident"], "%d.%m.%Y")
     current_record = (today - last_accident_date).days
     return current_record
 
@@ -26,8 +30,8 @@ def index():
 
 @app.route('/time')
 def get_time():
-    """Returns the current time and date"""
-    now = datetime.datetime.now().strftime("%d.%m.%y %H:%M:%S")
+    """Returns the current time and date (UTC+7)"""
+    now = get_now().strftime("%d.%m.%Y %H:%M:%S")
     return jsonify({"time": now})
 
 @app.route('/stats')
@@ -49,7 +53,7 @@ def get_stats():
 @app.route('/reset', methods=['POST'])
 def reset_stats():
     """Resets the current record and updates last accident date"""
-    current_date = datetime.datetime.now().strftime("%d.%m.%y")
+    current_date = get_now().strftime("%d.%m.%Y")  # Use adjusted time (UTC+7)
     safety_stats["last_accident"] = current_date  # Update last accident date
 
     return jsonify(safety_stats)
