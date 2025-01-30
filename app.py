@@ -1,5 +1,6 @@
 from flask import Flask, render_template, jsonify, request
 import datetime
+import os
 
 app = Flask(__name__)
 app.secret_key = "safety-dashboard"  # Required for session management
@@ -54,4 +55,5 @@ def reset_stats():
     return jsonify(safety_stats)
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000)
+    port = int(os.environ.get("PORT", 5000))  # Use Render's assigned PORT
+    app.run(host="0.0.0.0", port=port)
