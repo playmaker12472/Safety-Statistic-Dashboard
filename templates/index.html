@@ -3,57 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Safety Statistics</title>
+    <title>Safety Record Board</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <div class="board">
-        <h2 class="title">SAFETY STATISTICS</h2>
-        <div class="stats">
-            <div class="stat-item">DATE: <span id="date-time">Loading...</span> Days</div>
-            <div class="stat-item">ZERO ACD TARGET: <span id="zero-lta">Loading...</span> Days</div>
-            <div class="stat-item">PAST BEST RECORD: <span id="past-best">Loading...</span> Days</div>
-            <div class="stat-item">CURRENT RECORD: <span id="current-record">Loading...</span> Days</div>
-            <div class="stat-item">LAST ACCIDENT: <span id="last-accident">Loading...</span></div>
+        <!-- Header -->
+        <div class="header-container">
+            <img src="{{ url_for('static', filename='IEicon.png') }}" alt="IE Logo" class="header-img">
+            <h1 class="board-title">สถิติความปลอดภัย <br> SAFETY RECORD</h1>
+            <img src="{{ url_for('static', filename='safety-first.png') }}" alt="Safety First" class="header-img">
         </div>
-        <button id="accident-btn" onclick="reportAccident()">🚨 Report Accident</button>
+
+        <!-- Last Accident Section -->
+        <div class="stat-item-red">
+            <div class="label-group">
+                <span class="label">เกิดอุบัติเหตุครั้งสุดท้ายเมื่อ</span>
+                <span class="label-en">LAST ACCIDENT OCCURRED</span>
+            </div>
+            <div class="value-container">
+                <div class="number-box"><span id="last-accident">Loading...</span></div>
+            </div>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-row">
+                <!-- Left Section: Labels -->
+                <div class="label-group">
+                    <span class="label">เราดำเนินการมาแล้ว</span>
+                    <span class="label-en">WE HAVE OPERATED</span>
+                </div>
+        
+                <!-- Center: Number -->
+                <div class="number-box">
+                    <span id="current-record">Loading...</span>
+                </div>
+        
+                <!-- Right Section: Unit (Stacked) -->
+                <div class="unit-box">
+                    <span class="unit-label">วัน</span>
+                    <span class="unit-label">DAYS</span>
+                </div>
+        
+                <!-- Right Section: Labels -->
+                <div class="label-group">
+                    <span class="label">เป้าหมาย</span>
+                    <span class="label-en">TARGET</span>
+                </div>
+        
+                <!-- Center: Number -->
+                <div class="number-box">
+                    <span id="zero-lta">Loading...</span>
+                </div>
+        
+                <!-- Right Section: Unit (Stacked) -->
+                <div class="unit-box">
+                    <span class="unit-label">วัน</span>
+                    <span class="unit-label">DAYS</span>
+                </div>
+            </div>
+        
+            <div class="stat-item">
+                <div class="label-group">
+                    <span class="label">เรามีสถิติการทำงานสูงสุดที่ไม่มีอุบัติเหตุ</span>
+                    <span class="label-en">THE BEST RECORD</span>
+                </div>
+                
+                <!-- Center: Number -->
+                <div class="number-box">
+                        <span id="past-best">Loading...</span>
+                </div>
+                
+                <!-- Right Section: Unit (Stacked) -->
+                <div class="unit-box">
+                    <span class="unit-label">วัน</span>
+                    <span class="unit-label">DAYS</span>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <script>
-        function updateClock() {
-            fetch('/time')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('date-time').innerText = data.time;
-                });
-        }
+    <button id="accident-btn" onclick="reportAccident()">🚨 Report Accident</button>
+</div>
 
-        function updateStats() {
-            fetch('/stats')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('zero-lta').innerText = data.zero_lta_target;
-                    document.getElementById('past-best').innerText = data.past_best_record;
-                    document.getElementById('current-record').innerText = data.current_record;
-                    document.getElementById('last-accident').innerText = data.last_accident;
-                });
-        }
+<script>
+    function updateStats() {
+        fetch('/stats')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('zero-lta').innerText = data.zero_lta_target;
+                document.getElementById('past-best').innerText = data.past_best_record;
+                document.getElementById('current-record').innerText = data.current_record;
+                document.getElementById('last-accident').innerText = data.last_accident;
+            });
+    }
 
-        function reportAccident() {
-            fetch('/reset', { method: 'POST' })
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('current-record').innerText = 0;
-                    document.getElementById('last-accident').innerText = data.last_accident;
-                    document.getElementById('past-best').innerText = data.past_best_record;
-                    alert("🚨 Accident recorded! Current record reset.");
-                });
-        }
+    function reportAccident() {
+        fetch('/reset', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('current-record').innerText = 0;
+                document.getElementById('last-accident').innerText = data.last_accident;
+                document.getElementById('past-best').innerText = data.past_best_record;
+                alert("🚨 Accident recorded! Current record reset.");
+            });
+    }
 
-        setInterval(updateClock, 1000);
-        setInterval(updateStats, 5000);
-        updateClock();
-        updateStats();
-    </script>
+    setInterval(updateStats, 5000);
+    updateStats();
+</script>
 </body>
 </html>
