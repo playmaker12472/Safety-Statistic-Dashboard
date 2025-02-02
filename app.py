@@ -10,6 +10,7 @@ safety_stats = {
     "zero_lta_target": 365,
     "past_best_record": 0,  # Initial past best record
     "last_accident": "30.01.2025",  # Last accident date in DD.MM.YY format
+    "today_datetime": 0
 }
 
 def get_now():
@@ -21,7 +22,7 @@ def calculate_current_record():
     today = get_now()
     last_accident_date = datetime.datetime.strptime(safety_stats["last_accident"], "%d.%m.%Y")
     current_record = (today - last_accident_date).days
-    return current_record
+    return current_record, today
 
 @app.route('/')
 def index():
@@ -37,7 +38,9 @@ def get_time():
 @app.route('/stats')
 def get_stats():
     """Returns the safety statistics"""
-    current_record = calculate_current_record()
+    current_record, today = calculate_current_record()
+    safety_stats["today_datetime"] = today.strftime("%d.%m.%Y")
+    # safety_stats["today_datetime"] = today
 
     # Update past best record if current surpasses it
     if current_record > safety_stats["past_best_record"]:
@@ -45,6 +48,7 @@ def get_stats():
 
     return jsonify({
         "zero_lta_target": safety_stats["zero_lta_target"],
+        "today_datetime": safety_stats["today_datetime"],
         "past_best_record": safety_stats["past_best_record"],
         "current_record": current_record,
         "last_accident": safety_stats["last_accident"]

@@ -25,6 +25,17 @@
                 <div class="number-box"><span id="last-accident">Loading...</span></div>
             </div>
         </div>
+
+        <!-- Last Accident Section -->
+        <div class="stat-item-red">
+            <div class="label-group">
+                <span class="label">วันนี้วันที่</span>
+                <span class="label-en">CURRENT DATE and TIME</span>
+            </div>
+            <div class="value-container">
+                <div class="number-box"><span id="current-datetime">Loading...</span></div>
+            </div>
+        </div>
         
         <div class="stats">
             <div class="stat-row">
@@ -92,6 +103,7 @@
             .then(response => response.json())
             .then(data => {
                 document.getElementById('zero-lta').innerText = data.zero_lta_target;
+                document.getElementById('current-datetime').innerText = data.today_datetime;
                 document.getElementById('past-best').innerText = data.past_best_record;
                 document.getElementById('current-record').innerText = data.current_record;
                 document.getElementById('last-accident').innerText = data.last_accident;
