@@ -1,4 +1,5 @@
 from flask import Flask, render_template, jsonify, request
+from apscheduler.schedulers.background import BackgroundScheduler
 import datetime
 import os
 
@@ -23,6 +24,19 @@ def calculate_current_record():
     last_accident_date = datetime.datetime.strptime(safety_stats["last_accident"], "%d.%m.%Y")
     current_record = (today - last_accident_date).days
     return current_record, today
+
+def update_daily_stats():
+    """Updates the daily date and current record."""
+    current_record, today = calculate_current_record()
+    safety_stats["today_datetime"] = today.strftime("%d.%m.%Y")
+    
+    if current_record > safety_stats["past_best_record"]:
+        safety_stats["past_best_record"] = current_record
+
+# Scheduler to run update_daily_stats every midnight
+scheduler = BackgroundScheduler()
+scheduler.add_job(update_daily_stats, trigger='cron', hour=0, minute=0)  # Runs daily at midnight UTC+7
+scheduler.start()
 
 @app.route('/')
 def index():
