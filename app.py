@@ -2,6 +2,15 @@ from flask import Flask, render_template, jsonify, request
 from apscheduler.schedulers.background import BackgroundScheduler
 import datetime
 import os
+import pandas as pd
+
+file = 'accident report.xlsx'
+
+df = pd.read_excel(file)
+
+last_accident_date = df.iloc[-1, 0]
+
+next_row = df.last_valid_index() + 1
 
 app = Flask(__name__)
 app.secret_key = "safety-dashboard"  # Required for session management
@@ -10,7 +19,7 @@ app.secret_key = "safety-dashboard"  # Required for session management
 safety_stats = {
     "zero_lta_target": 365,
     "past_best_record": 0,  # Initial past best record
-    "last_accident": "30.01.2025",  # Last accident date in DD.MM.YY format
+    "last_accident": last_accident_date,  # Last accident date in DD.MM.YY format
     "today_datetime": 0
 }
 
@@ -19,7 +28,17 @@ def get_now():
     return datetime.datetime.utcnow() + datetime.timedelta(hours=7)
 
 def calculate_current_record():
+    
+    # get new last accident date
+
+    # Load data
+    df = pd.read_excel(file)
+
+    # Get the last cell of the first column
+    last_accident_date = df.iloc[-1, 0]
+    
     """Calculates current record as days since the last accident."""
+    safety_stats["last_accident"] = last_accident_date
     today = get_now()
     last_accident_date = datetime.datetime.strptime(safety_stats["last_accident"], "%d.%m.%Y")
     current_record = (today - last_accident_date).days
@@ -71,7 +90,13 @@ def get_stats():
 @app.route('/reset', methods=['POST'])
 def reset_stats():
     """Resets the current record and updates last accident date"""
+    df = pd.read_excel(file)
+    # today_date = datetime.today().strftime("%d.%m.%Y")
     current_date = get_now().strftime("%d.%m.%Y")  # Use adjusted time (UTC+7)
+    last_index = df[df.iloc[:, 0].notna()].index[-1]
+    df.loc[last_index + 1, df.columns[0]] = current_date
+    
+    df.to_excel(file, index=False)
     safety_stats["last_accident"] = current_date  # Update last accident date
 
     return jsonify(safety_stats)
